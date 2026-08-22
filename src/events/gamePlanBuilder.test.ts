@@ -22,7 +22,7 @@ test("sequences by gig-log follow-up and avoids adjacent artists", () => {
   const profile = buildEventProfile({ eventName: "Test party", eventDate: "2026-09-12", eventType: "birthday" });
   const section = buildGamePlan(profile, kb).sections.find((item) => item.section === "dance-floor-opening")!;
   assert.deepEqual(section.tracks.map((track) => track.title), ["Yeah!", "Temperature", "Promiscuous", "OMG"]);
-  assert.equal(section.targetEnergy, 6);
+  assert.equal(section.targetEnergy, 7);
   assert.equal(section.tracks[1].transitionReason?.includes("Yeah!"), true);
   assert.notEqual(section.tracks[0].artist, section.tracks[1].artist);
   assert.notEqual(section.tracks[2].artist, section.tracks[3].artist);

@@ -76,10 +76,21 @@ export interface EventInput {
   otherEventTypeLabel?: string;
   schedule?: EventSchedule;
   audience?: AudienceInfo;
+  energyPreferences?: EnergyPreferences;
   /** Free-text, comma/newline separated list of must-play songs/artists, pasted as-is. */
   mustPlayRaw?: string;
   /** Free-text, comma/newline separated list of do-not-play songs/artists, pasted as-is. */
   doNotPlayRaw?: string;
+}
+
+export type EnergyIntensity = "low" | "moderate" | "high";
+export type EnergyBuild = "slow" | "medium" | "explosive";
+
+export interface EnergyPreferences {
+  intensity?: EnergyIntensity;
+  build?: EnergyBuild;
+  /** Desired peak duration in minutes. */
+  peakMinutes?: number;
 }
 
 /** Normalized, parsed event profile built from an EventInput. */
@@ -92,6 +103,7 @@ export interface EventProfile {
   eventTypeLabel: string;
   schedule: EventSchedule;
   audience: AudienceInfo;
+  energyPreferences: EnergyPreferences;
   mustPlay: SongRequest[];
   doNotPlay: SongRequest[];
   createdAt: string;
@@ -103,6 +115,20 @@ export type GamePlanSection =
   | "dance-floor-opening"
   | "peak-hour"
   | "late-night";
+
+export interface EnergyPoint {
+  label: string;
+  startMinute: number;
+  endMinute: number;
+  targetEnergy: number;
+  purpose: string;
+  reset?: boolean;
+}
+
+export interface EnergyCurve {
+  totalMinutes: number;
+  points: EnergyPoint[];
+}
 
 export interface GamePlanTrack {
   title: string;
@@ -132,6 +158,7 @@ export interface EventGuidance {
 
 export interface DjGamePlan {
   eventId: string;
+  energyCurve: EnergyCurve;
   sections: GamePlanSectionPlan[];
   /** Songs the customer asked to avoid, echoed back so the DJ can double-check the parse. */
   doNotPlay: SongRequest[];

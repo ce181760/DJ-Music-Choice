@@ -11,6 +11,7 @@ import {
 } from "./schema.js";
 import { buildEventGuidance } from "./guidance.js";
 import { isValidSong } from "../extraction/songValidation.js";
+import { buildEnergyCurve, targetEnergyForSection } from "./energyCurve.js";
 
 const SECTION_TAGS: Record<GamePlanSection, ScenarioTag[]> = {
   "cocktail-arrival": ["cocktail-dinner"],
@@ -26,14 +27,6 @@ const SECTION_DESCRIPTIONS: Record<GamePlanSection, string> = {
   "dance-floor-opening": "Familiar, crowd-friendly songs to get the first dancers up.",
   "peak-hour": "High-confidence bangers — the main event.",
   "late-night": "Higher-energy or sing-along/requested styles to close out the night.",
-};
-
-const SECTION_ENERGY: Record<GamePlanSection, number> = {
-  "cocktail-arrival": 3,
-  dinner: 3,
-  "dance-floor-opening": 6,
-  "peak-hour": 9,
-  "late-night": 7,
 };
 
 const SECTION_ORDER: GamePlanSection[] = [
@@ -145,6 +138,7 @@ function sequenceTracks(tracks: GamePlanTrack[], kb: KnowledgeBase, targetEnergy
  * section is filled with high-Banger-Score knowledge-base picks, excluding do-not-play.
  */
 export function buildGamePlan(profile: EventProfile, kb: KnowledgeBase): DjGamePlan {
+  const energyCurve = buildEnergyCurve(profile);
   const usedKeys = new Set<string>();
   const sections: Record<GamePlanSection, GamePlanTrack[]> = {
     "cocktail-arrival": [],
@@ -195,15 +189,19 @@ export function buildGamePlan(profile: EventProfile, kb: KnowledgeBase): DjGameP
     }
   }
 
-  const sectionPlans: GamePlanSectionPlan[] = SECTION_ORDER.map((section) => ({
+  const sectionPlans: GamePlanSectionPlan[] = SECTION_ORDER.map((section) => {
+    const targetEnergy = targetEnergyForSection(energyCurve, section);
+    return {
     section,
     description: SECTION_DESCRIPTIONS[section],
-    targetEnergy: SECTION_ENERGY[section],
-    tracks: sequenceTracks(sections[section], kb, SECTION_ENERGY[section]),
-  }));
+    targetEnergy,
+    tracks: sequenceTracks(sections[section], kb, targetEnergy),
+    };
+  });
 
   return {
     eventId: profile.id,
+    energyCurve,
     sections: sectionPlans,
     doNotPlay: profile.doNotPlay,
     notes: [
