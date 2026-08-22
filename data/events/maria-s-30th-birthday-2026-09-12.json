@@ -1,0 +1,310 @@
+{
+  "profile": {
+    "id": "maria-s-30th-birthday-2026-09-12",
+    "eventName": "Maria's 30th Birthday",
+    "eventDate": "2026-09-12",
+    "eventType": "birthday",
+    "eventTypeLabel": "birthday",
+    "schedule": {
+      "guestArrival": "7:00 PM",
+      "cocktailHour": "7:00 PM - 8:00 PM",
+      "dinner": "8:00 PM - 8:30 PM",
+      "dancingStarts": "8:30 PM",
+      "cake": "10:00 PM",
+      "lastSong": "11:15 PM",
+      "eventEnd": "11:30 PM"
+    },
+    "audience": {
+      "ageRanges": [
+        "25-34",
+        "35-44"
+      ],
+      "groups": [
+        "family",
+        "friends",
+        "coworkers"
+      ],
+      "culturalBackground": "Dominican and Puerto Rican family"
+    },
+    "mustPlay": [
+      {
+        "artist": "Usher",
+        "title": "Yeah!",
+        "raw": "Usher - Yeah!"
+      },
+      {
+        "title": "Happy Birthday song",
+        "artist": null,
+        "raw": "Happy Birthday song"
+      },
+      {
+        "artist": "Bad Bunny",
+        "title": "Titi Me Pregunto",
+        "raw": "Bad Bunny - Titi Me Pregunto"
+      },
+      {
+        "title": "September",
+        "artist": "Earth, Wind & Fire",
+        "raw": "\"September\" by Earth, Wind & Fire"
+      }
+    ],
+    "doNotPlay": [
+      {
+        "title": "Nickelback",
+        "artist": null,
+        "raw": "Nickelback"
+      },
+      {
+        "title": "Baby Shark",
+        "artist": null,
+        "raw": "Baby Shark"
+      }
+    ],
+    "createdAt": "2026-08-22T18:49:40.136Z"
+  },
+  "gamePlan": {
+    "eventId": "maria-s-30th-birthday-2026-09-12",
+    "sections": [
+      {
+        "section": "cocktail-arrival",
+        "description": "Moderate energy, welcoming background music as guests arrive.",
+        "tracks": [
+          {
+            "title": "world challenges DJs face at weddings",
+            "artist": "• Real",
+            "source": "knowledge-base",
+            "bangerScore": 45,
+            "reason": "High Banger Score (45/100) for this slot from DJ gig log knowledge."
+          }
+        ]
+      },
+      {
+        "section": "dinner",
+        "description": "Background / conversational — low enough to talk over.",
+        "tracks": []
+      },
+      {
+        "section": "dance-floor-opening",
+        "description": "Familiar, crowd-friendly songs to get the first dancers up.",
+        "tracks": [
+          {
+            "title": "Black Eyed Peas",
+            "artist": "Let’s Get It Started",
+            "source": "knowledge-base",
+            "bangerScore": 81,
+            "reason": "High Banger Score (81/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Shakira, Freshlyground",
+            "artist": "Waka Waka",
+            "source": "knowledge-base",
+            "bangerScore": 80,
+            "reason": "High Banger Score (80/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Bruno Mars",
+            "artist": "That’s What I Like",
+            "source": "knowledge-base",
+            "bangerScore": 80,
+            "reason": "High Banger Score (80/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Bob Sinclar",
+            "artist": "Rock This Party",
+            "source": "knowledge-base",
+            "bangerScore": 79,
+            "reason": "High Banger Score (79/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "David Guetta",
+            "artist": "Sexy Bitch",
+            "source": "knowledge-base",
+            "bangerScore": 79,
+            "reason": "High Banger Score (79/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Kesariya -",
+            "artist": "Dj Abhijit 2023 Remix",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "DJ Shavers X DJ Kyril",
+            "artist": "Baaki Baatein Peene Baad (Remix)",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "DJ Veronika DJ Dharak",
+            "artist": "Tum Hi Ho Bandhu (Remix)",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          }
+        ]
+      },
+      {
+        "section": "peak-hour",
+        "description": "High-confidence bangers — the main event.",
+        "tracks": [
+          {
+            "title": "Yeah!",
+            "artist": "Usher",
+            "source": "must-play",
+            "bangerScore": 50,
+            "reason": "Customer requested — anchor track, backed by DJ gig log history."
+          },
+          {
+            "title": "Happy Birthday song",
+            "artist": null,
+            "source": "must-play",
+            "reason": "Customer requested — anchor track (no gig log history yet, verify fit)."
+          },
+          {
+            "title": "Titi Me Pregunto",
+            "artist": "Bad Bunny",
+            "source": "must-play",
+            "reason": "Customer requested — anchor track (no gig log history yet, verify fit)."
+          },
+          {
+            "title": "September",
+            "artist": "Earth, Wind & Fire",
+            "source": "must-play",
+            "reason": "Customer requested — anchor track (no gig log history yet, verify fit)."
+          },
+          {
+            "title": "DJ MITRA",
+            "artist": "Pyaar Hota Kayi Baar Hai ( REMIX )",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "KEDROCK SD Style",
+            "artist": "Bhool Bhulaiyaa 2 (Mashup)",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "DJ Veer x DJ Durgesh Mashup",
+            "artist": "Tu Meri",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "DJ Doc X DJ Unbeatable 2020 Club Remix",
+            "artist": "Subah Hone Na De ( Desi Boyz )",
+            "source": "knowledge-base",
+            "bangerScore": 76,
+            "reason": "High Banger Score (76/100) for this slot from DJ gig log knowledge."
+          }
+        ]
+      },
+      {
+        "section": "late-night",
+        "description": "Higher-energy or sing-along/requested styles to close out the night.",
+        "tracks": [
+          {
+            "title": "Rihanna",
+            "artist": "S&M",
+            "source": "knowledge-base",
+            "bangerScore": 75,
+            "reason": "High Banger Score (75/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "DJ NYK Remix",
+            "artist": "Ghungroo (WAR)",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Tere Vaaste - DJ Purvish Shah x DJ Glory",
+            "artist": "Remix",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Cardi B",
+            "artist": "Bodak Yellow",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Teriyaki Boyz",
+            "artist": "Tokyo Drift",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Wiz Khalifa",
+            "artist": "We Dem Boyz",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "A$AP Ferg, A$AP Rocky, French Montana, Trinidad James",
+            "artist": "Work REMIX",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          },
+          {
+            "title": "Jennie",
+            "artist": "Like Jennie",
+            "source": "knowledge-base",
+            "bangerScore": 73,
+            "reason": "High Banger Score (73/100) for this slot from DJ gig log knowledge."
+          }
+        ]
+      }
+    ],
+    "doNotPlay": [
+      {
+        "title": "Nickelback",
+        "artist": null,
+        "raw": "Nickelback"
+      },
+      {
+        "title": "Baby Shark",
+        "artist": null,
+        "raw": "Baby Shark"
+      }
+    ],
+    "notes": [
+      "Don't treat the Must Play list as the entire playlist — those are anchors the rest of the night is built around.",
+      "Do Not Play entries were filtered out of every recommended slot above; double-check the parsed list against the customer's original message."
+    ],
+    "guidance": [
+      {
+        "title": "Mix the room",
+        "message": "The audience includes family, friends, coworkers. Plan short music runs so every group gets a chance to enjoy the dance floor.",
+        "priority": "helpful"
+      },
+      {
+        "title": "Review cultural requests",
+        "message": "Use the cultural background note to ask the customer which artists, languages, traditions, and dances they want represented. Do not guess.",
+        "priority": "important"
+      },
+      {
+        "title": "Protect the customer’s choices",
+        "message": "4 must-play request(s) and 2 do-not-play request(s) were received. Review the parsed names before the event.",
+        "priority": "ready"
+      },
+      {
+        "title": "Final check",
+        "message": "Confirm venue power, speakers, microphone needs, setup access, and the person who can approve song changes during the event.",
+        "priority": "important"
+      }
+    ],
+    "generatedAt": "2026-08-22T18:49:40.179Z"
+  }
+}
