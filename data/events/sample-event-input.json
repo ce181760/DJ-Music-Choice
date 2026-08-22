@@ -1,0 +1,22 @@
+{
+  "eventName": "Maria's 30th Birthday",
+  "eventDate": "2026-09-12",
+  "eventType": "birthday",
+  "otherEventTypeLabel": "",
+  "schedule": {
+    "guestArrival": "7:00 PM",
+    "cocktailHour": "7:00 PM - 8:00 PM",
+    "dinner": "8:00 PM - 8:30 PM",
+    "dancingStarts": "8:30 PM",
+    "cake": "10:00 PM",
+    "lastSong": "11:15 PM",
+    "eventEnd": "11:30 PM"
+  },
+  "audience": {
+    "ageRanges": ["25-34", "35-44"],
+    "groups": ["family", "friends", "coworkers"],
+    "culturalBackground": "Dominican and Puerto Rican family"
+  },
+  "mustPlayRaw": "Usher - Yeah!\nHappy Birthday song\nBad Bunny - Titi Me Pregunto\n\"September\" by Earth, Wind & Fire",
+  "doNotPlayRaw": "Nickelback\nBaby Shark"
+}
