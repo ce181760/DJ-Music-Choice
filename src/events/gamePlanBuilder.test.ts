@@ -3,6 +3,7 @@ import test from "node:test";
 import { buildGamePlan } from "./gamePlanBuilder.js";
 import { KnowledgeBase } from "../knowledge/schema.js";
 import { buildEventProfile } from "./profileBuilder.js";
+import { buildEnergyCurve } from "./energyCurve.js";
 
 function song(key: string, title: string, artist: string, score: number, tags: Record<string, number>, followUpCounts: Record<string, number> = {}) {
   return {
@@ -22,8 +23,26 @@ test("sequences by gig-log follow-up and avoids adjacent artists", () => {
   const profile = buildEventProfile({ eventName: "Test party", eventDate: "2026-09-12", eventType: "birthday" });
   const section = buildGamePlan(profile, kb).sections.find((item) => item.section === "dance-floor-opening")!;
   assert.deepEqual(section.tracks.map((track) => track.title), ["Yeah!", "Temperature", "Promiscuous", "OMG"]);
-  assert.equal(section.targetEnergy, 6);
+  assert.equal(section.targetEnergy, 7);
+  assert.equal(section.energyReset, undefined);
   assert.equal(section.tracks[1].transitionReason?.includes("Yeah!"), true);
   assert.notEqual(section.tracks[0].artist, section.tracks[1].artist);
   assert.notEqual(section.tracks[2].artist, section.tracks[3].artist);
+});
+
+test("creates an intentional birthday energy reset before the build", () => {
+  const profile = buildEventProfile({
+    eventName: "Birthday",
+    eventDate: "2026-09-12",
+    eventType: "birthday",
+    schedule: { guestArrival: "6:00 PM", eventEnd: "10:00 PM" },
+    energyPreferences: { peakMinutes: 90 },
+  });
+  const curve = buildEnergyCurve(profile);
+  const reset = curve.points.find((point) => point.reset);
+
+  assert.equal(curve.totalMinutes, 240);
+  assert.equal(reset?.resetStyle, "dramatic");
+  assert.equal(reset?.resetReason?.includes("sustained"), true);
+  assert.equal(reset?.targetEnergy, 4);
 });

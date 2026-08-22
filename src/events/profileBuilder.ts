@@ -35,6 +35,7 @@ export function buildEventProfile(input: EventInput): EventProfile {
     eventTypeLabel,
     schedule: input.schedule ?? {},
     audience: input.audience ?? {},
+    energyPreferences: input.energyPreferences ?? {},
     mustPlay: parseSongList(input.mustPlayRaw),
     doNotPlay: parseSongList(input.doNotPlayRaw),
     createdAt: new Date().toISOString(),
