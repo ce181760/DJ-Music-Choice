@@ -123,6 +123,8 @@ export interface EnergyPoint {
   targetEnergy: number;
   purpose: string;
   reset?: boolean;
+  resetStyle?: "small" | "dramatic";
+  resetReason?: string;
 }
 
 export interface EnergyCurve {
@@ -148,6 +150,12 @@ export interface GamePlanSectionPlan {
   description: string;
   tracks: GamePlanTrack[];
   targetEnergy: number;
+  energyReset?: {
+    fromEnergy: number;
+    toEnergy: number;
+    style: "small" | "dramatic";
+    reason: string;
+  };
 }
 
 export interface EventGuidance {

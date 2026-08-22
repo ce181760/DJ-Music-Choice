@@ -96,6 +96,14 @@ export function buildEnergyCurve(profile: EventProfile): EnergyCurve {
       targetEnergy: targets[index],
       purpose: template.purposes[index],
       reset: index === template.resetIndex,
+      ...(index === template.resetIndex
+        ? {
+            resetStyle: peakMinutes >= 75 ? ("dramatic" as const) : ("small" as const),
+            resetReason: peakMinutes >= 75
+              ? "Breathing room after sustained intensity before the longer peak."
+              : "Short reset after sustained energy before rebuilding toward peak.",
+          }
+        : {}),
     };
   });
   return { totalMinutes, points };
@@ -107,7 +115,7 @@ export function targetEnergyAt(curve: EnergyCurve, minute: number): number {
   return point.targetEnergy;
 }
 
-export function targetEnergyForSection(curve: EnergyCurve, section: GamePlanSection): number {
+export function pointForSection(curve: EnergyCurve, section: GamePlanSection) {
   const labels: Record<GamePlanSection, string[]> = {
     "cocktail-arrival": ["cocktail", "arrival"],
     dinner: ["dinner", "social"],
@@ -117,8 +125,13 @@ export function targetEnergyForSection(curve: EnergyCurve, section: GamePlanSect
   };
   for (const label of labels[section]) {
     const point = curve.points.find((candidate) => candidate.label.toLowerCase().includes(label));
-    if (point) return point.targetEnergy;
+    if (point) return point;
   }
   const fallbackMinute = ((Object.keys(labels).indexOf(section) + 0.5) / 5) * curve.totalMinutes;
-  return targetEnergyAt(curve, fallbackMinute);
+  return curve.points.find((candidate) => fallbackMinute >= candidate.startMinute && fallbackMinute < candidate.endMinute)
+    ?? curve.points[curve.points.length - 1];
+}
+
+export function targetEnergyForSection(curve: EnergyCurve, section: GamePlanSection): number {
+  return pointForSection(curve, section).targetEnergy;
 }

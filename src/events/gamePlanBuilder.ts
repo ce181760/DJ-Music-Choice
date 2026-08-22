@@ -11,7 +11,7 @@ import {
 } from "./schema.js";
 import { buildEventGuidance } from "./guidance.js";
 import { isValidSong } from "../extraction/songValidation.js";
-import { buildEnergyCurve, targetEnergyForSection } from "./energyCurve.js";
+import { buildEnergyCurve, pointForSection } from "./energyCurve.js";
 
 const SECTION_TAGS: Record<GamePlanSection, ScenarioTag[]> = {
   "cocktail-arrival": ["cocktail-dinner"],
@@ -87,7 +87,12 @@ function songEnergy(song: SongKnowledge): number {
   return Math.max(1, Math.min(10, Math.round(1 + (highHits / (highHits + lowHits)) * 9)));
 }
 
-function sequenceTracks(tracks: GamePlanTrack[], kb: KnowledgeBase, targetEnergy: number): GamePlanTrack[] {
+function sequenceTracks(
+  tracks: GamePlanTrack[],
+  kb: KnowledgeBase,
+  targetEnergy: number,
+  resetReason?: string
+): GamePlanTrack[] {
   const remaining = [...tracks];
   const ordered: GamePlanTrack[] = [];
   let previous: SongKnowledge | undefined;
@@ -119,7 +124,9 @@ function sequenceTracks(tracks: GamePlanTrack[], kb: KnowledgeBase, targetEnergy
     const selectedEnergy = selectedSong ? songEnergy(selectedSong) : 5;
     const followed = previous && selectedSong ? previous.followUpCounts[selectedSong.key] ?? 0 : 0;
     const artistChange = previous?.artist && selected.artist && normalize(previous.artist) !== normalize(selected.artist);
-    const transitionReason = !previous
+    const transitionReason = !previous && resetReason
+      ? `Energy reset: ${resetReason}`
+      : !previous
       ? `Opens this section near the ${targetEnergy}/10 energy target.`
       : followed > 0
         ? `Played after ${previous.title} in ${followed} recorded DJ set${followed === 1 ? "" : "s"}.`
@@ -189,13 +196,24 @@ export function buildGamePlan(profile: EventProfile, kb: KnowledgeBase): DjGameP
     }
   }
 
-  const sectionPlans: GamePlanSectionPlan[] = SECTION_ORDER.map((section) => {
-    const targetEnergy = targetEnergyForSection(energyCurve, section);
+  const sectionPlans: GamePlanSectionPlan[] = SECTION_ORDER.map((section, index) => {
+    const point = pointForSection(energyCurve, section);
+    const targetEnergy = point.targetEnergy;
+    const previousTarget = index > 0 ? pointForSection(energyCurve, SECTION_ORDER[index - 1]).targetEnergy : targetEnergy;
+    const energyReset = targetEnergy < previousTarget && point.reset
+      ? {
+          fromEnergy: previousTarget,
+          toEnergy: targetEnergy,
+          style: point.resetStyle ?? "small",
+          reason: point.resetReason ?? point.purpose,
+        }
+      : undefined;
     return {
     section,
     description: SECTION_DESCRIPTIONS[section],
     targetEnergy,
-    tracks: sequenceTracks(sections[section], kb, targetEnergy),
+    energyReset,
+    tracks: sequenceTracks(sections[section], kb, targetEnergy, energyReset?.reason),
     };
   });
 
