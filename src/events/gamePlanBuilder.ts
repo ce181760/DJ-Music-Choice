@@ -12,10 +12,11 @@ import {
 import { buildEventGuidance } from "./guidance.js";
 import { isValidSong } from "../extraction/songValidation.js";
 import { buildEnergyCurve, pointForSection } from "./energyCurve.js";
+import { detectGenrePreference, genreFitBonus, GenrePreference } from "../scoring/genreFit.js";
 
 const SECTION_TAGS: Record<GamePlanSection, ScenarioTag[]> = {
-  "cocktail-arrival": ["cocktail-dinner"],
-  dinner: ["cocktail-dinner"],
+  "cocktail-arrival": ["cocktail-hour", "cocktail-dinner"],
+  dinner: ["dinner", "cocktail-dinner", "cocktail-hour"],
   "dance-floor-opening": ["opener", "warm-up", "dance-floor"],
   "peak-hour": ["peak-hour", "banger"],
   "late-night": ["late-night", "slow-singalong"],
@@ -87,6 +88,50 @@ function songEnergy(song: SongKnowledge): number {
   return Math.max(1, Math.min(10, Math.round(1 + (highHits / (highHits + lowHits)) * 9)));
 }
 
+function formatSectionLabel(section: GamePlanSection): string {
+  return section
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+/** Human-readable breakdown of every factor behind a knowledge-base recommendation. */
+function buildEvidence(
+  song: SongKnowledge,
+  section: GamePlanSection,
+  genrePreference: GenrePreference,
+  targetEnergy: number
+): string[] {
+  const evidence: string[] = [];
+
+  const tags = SECTION_TAGS[section];
+  const tagHitCount = tags.reduce((sum, tag) => sum + (song.scenarioTagCounts[tag] ?? 0), 0);
+  if (tagHitCount > 0) {
+    evidence.push(`🎯 ${formatSectionLabel(section)} fit — seen in ${tagHitCount} matching set${tagHitCount === 1 ? "" : "s"}.`);
+  }
+
+  const bonus = genreFitBonus(song, genrePreference);
+  if (bonus > 0) {
+    evidence.push(`🌎 Latin/cultural fit +${bonus}.`);
+  }
+
+  const energy = songEnergy(song);
+  evidence.push(`📈 Energy ${energy}/10, targeting ${targetEnergy}/10 for this moment.`);
+
+  const breakdown = computeBangerScore(song);
+  if (breakdown.signals.transitionCompatibility >= 50) {
+    evidence.push("🔄 Strong transition potential — mixed cleanly in past sets.");
+  }
+
+  const distinctSources = new Set(song.mentions.map((m) => m.source.videoId)).size;
+  if (distinctSources > 0) {
+    evidence.push(`🎧 Appeared in ${distinctSources} relevant DJ set${distinctSources === 1 ? "" : "s"}.`);
+  }
+
+  evidence.push(`🔥 Banger Score ${song.bangerScore}/100.`);
+  return evidence;
+}
+
 function sequenceTracks(
   tracks: GamePlanTrack[],
   kb: KnowledgeBase,
@@ -133,7 +178,13 @@ function sequenceTracks(
         : artistChange
           ? `Changes artist while staying near the ${targetEnergy}/10 energy target.`
           : `Keeps the section near its ${targetEnergy}/10 energy target.`;
-    ordered.push({ ...selected, energy: selectedEnergy, transitionReason });
+    const transitionEvidence = !previous ? [] : [`🔄 ${transitionReason}`];
+    ordered.push({
+      ...selected,
+      energy: selectedEnergy,
+      transitionReason,
+      evidence: [...(selected.evidence ?? []), ...transitionEvidence],
+    });
     previous = selectedSong;
   }
   return ordered;
@@ -146,6 +197,7 @@ function sequenceTracks(
  */
 export function buildGamePlan(profile: EventProfile, kb: KnowledgeBase): DjGamePlan {
   const energyCurve = buildEnergyCurve(profile);
+  const genrePreference = detectGenrePreference(profile);
   const usedKeys = new Set<string>();
   const sections: Record<GamePlanSection, GamePlanTrack[]> = {
     "cocktail-arrival": [],
@@ -170,31 +222,74 @@ export function buildGamePlan(profile: EventProfile, kb: KnowledgeBase): DjGameP
       reason: known
         ? "Customer requested — anchor track, backed by DJ gig log history."
         : "Customer requested — anchor track (no gig log history yet, verify fit).",
+      evidence: known
+        ? ["⭐ Customer requested — anchor track.", ...buildEvidence(known, section, genrePreference, pointForSection(energyCurve, section).targetEnergy)]
+        : ["⭐ Customer requested — no gig log history yet, verify fit."],
     });
   }
 
   const FILL_TARGET = 8;
   for (const section of SECTION_ORDER) {
     const tags = SECTION_TAGS[section];
+    const targetEnergy = pointForSection(energyCurve, section).targetEnergy;
     const candidates = Object.values(kb.songs)
       .filter((s) => isValidSong(s))
       .filter((s) => tags.some((tag) => (s.scenarioTagCounts[tag] ?? 0) > 0))
       .filter((s) => !usedKeys.has(s.key))
       .filter((s) => !isExcluded(s.title, s.artist, profile.doNotPlay))
-      .sort((a, b) => b.bangerScore - a.bangerScore);
+      .sort((a, b) =>
+        (b.bangerScore + genreFitBonus(b, genrePreference)) -
+        (a.bangerScore + genreFitBonus(a, genrePreference))
+      );
 
     for (const candidate of candidates) {
       if (sections[section].length >= FILL_TARGET) break;
       usedKeys.add(candidate.key);
+      const culturalFit = genreFitBonus(candidate, genrePreference) > 0;
       sections[section].push({
         title: candidate.title,
         artist: candidate.artist,
         source: "knowledge-base",
         bangerScore: candidate.bangerScore,
-        reason: `High Banger Score (${candidate.bangerScore}/100) for this slot from DJ gig log knowledge.`,
+        reason: culturalFit
+          ? `High Banger Score (${candidate.bangerScore}/100) and a strong cultural fit for this crowd.`
+          : `High Banger Score (${candidate.bangerScore}/100) for this slot from DJ gig log knowledge.`,
+        evidence: buildEvidence(candidate, section, genrePreference, targetEnergy),
       });
     }
+
+    // Sparse scenario-tag data (e.g. dinner) shouldn't leave a section empty — fall back to
+    // any valid, unused song whose energy fits the target for this moment of the night.
+    if (sections[section].length < FILL_TARGET) {
+      const fallback = Object.values(kb.songs)
+        .filter((s) => isValidSong(s))
+        .filter((s) => !usedKeys.has(s.key))
+        .filter((s) => !isExcluded(s.title, s.artist, profile.doNotPlay))
+        .sort((a, b) => {
+          const energyDiffA = Math.abs(songEnergy(a) - targetEnergy);
+          const energyDiffB = Math.abs(songEnergy(b) - targetEnergy);
+          if (energyDiffA !== energyDiffB) return energyDiffA - energyDiffB;
+          return (b.bangerScore + genreFitBonus(b, genrePreference)) - (a.bangerScore + genreFitBonus(a, genrePreference));
+        });
+
+      for (const candidate of fallback) {
+        if (sections[section].length >= FILL_TARGET) break;
+        usedKeys.add(candidate.key);
+        const culturalFit = genreFitBonus(candidate, genrePreference) > 0;
+        sections[section].push({
+          title: candidate.title,
+          artist: candidate.artist,
+          source: "knowledge-base",
+          bangerScore: candidate.bangerScore,
+          reason: culturalFit
+            ? `Closest energy match (${songEnergy(candidate)}/10) and a strong cultural fit for this slot.`
+            : `Closest energy match (${songEnergy(candidate)}/10) for this slot from DJ gig log knowledge.`,
+          evidence: buildEvidence(candidate, section, genrePreference, targetEnergy),
+        });
+      }
+    }
   }
+
 
   const sectionPlans: GamePlanSectionPlan[] = SECTION_ORDER.map((section, index) => {
     const point = pointForSection(energyCurve, section);

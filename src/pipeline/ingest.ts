@@ -1,4 +1,4 @@
-import { getVideoDetails, searchDjVideos } from "../youtube/client.js";
+import { getChannelUploads, getVideoDetails, searchDjVideos } from "../youtube/client.js";
 import { getVideoTranscript } from "../youtube/transcript.js";
 import { extractSongsFromText } from "../extraction/songExtractor.js";
 import { inferScenarioTags } from "../extraction/scenarioTags.js";
@@ -92,6 +92,28 @@ export async function ingestFromSearch(query: string, maxResults = 10): Promise<
     console.log(`Ingesting "${result.title}" (${result.videoId})...`);
     try {
       const count = await ingestVideo(result.videoId, query);
+      console.log(`  -> extracted ${count} candidate song mention(s).`);
+    } catch (err) {
+      console.warn(`  -> failed: ${(err as Error).message}`);
+    }
+  }
+}
+
+/** Ingests every recent upload from a DJ's YouTube channel (by handle, e.g. "@NickSpinelli"). */
+export async function ingestFromChannel(
+  handle: string,
+  contextText = "",
+  maxResults = 25
+): Promise<void> {
+  const results = await getChannelUploads(handle, maxResults);
+  if (results.length === 0) {
+    console.warn(`No uploads found for channel ${handle}.`);
+    return;
+  }
+  for (const result of results) {
+    console.log(`Ingesting "${result.title}" (${result.videoId}) from ${handle}...`);
+    try {
+      const count = await ingestVideo(result.videoId, contextText);
       console.log(`  -> extracted ${count} candidate song mention(s).`);
     } catch (err) {
       console.warn(`  -> failed: ${(err as Error).message}`);
