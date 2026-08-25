@@ -143,6 +143,8 @@ export interface GamePlanTrack {
   energy?: number;
   /** Explains why this track follows the previous track in the generated sequence. */
   transitionReason?: string;
+  /** Human-readable breakdown of every factor that contributed to this pick (scenario fit, genre fit, energy, etc.). */
+  evidence?: string[];
 }
 
 export interface GamePlanSectionPlan {
